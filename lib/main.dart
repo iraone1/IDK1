@@ -1,45 +1,38 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hello/controllers/navigation_controller.dart'; // Import the controller
 import 'package:hello/screens/cartview.dart';
 import 'package:hello/screens/product_screen.dart';
 import 'screens/user_screen.dart';
 
 void main() {
-  runApp(MaterialApp(
-    home: Home(),
-    theme: ThemeData(
-      scaffoldBackgroundColor: Colors.grey[500],
-    ),
-  ));
+  runApp(MyApp());
 }
 
-class Home extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-  _HomeState createState() => _HomeState();
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      home: Home(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.grey[500],
+      ),
+    );
+  }
 }
 
-class _HomeState extends State<Home> {
-  int _selectedIndex = 0;
-
-  static List<Widget> _widgetOptions = <Widget>[
-    Text('Home Page'),
-    CartScreen(),
-    ProductScreen(),
-    UserView(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
+class Home extends StatelessWidget {
+  final NavigationController navigationController =
+      Get.put(NavigationController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
-      ),
+      body: Obx(() => Center(
+            child: _widgetOptions
+                .elementAt(navigationController.selectedIndex.value),
+          )),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -59,13 +52,20 @@ class _HomeState extends State<Home> {
             label: 'User',
           ),
         ],
-        currentIndex: _selectedIndex,
+        currentIndex: navigationController.selectedIndex.value,
         selectedItemColor: Colors.green,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.black,
-        onTap: _onItemTapped,
+        onTap: navigationController.changeIndex, // Call the changeIndex method
         type: BottomNavigationBarType.fixed,
       ),
     );
   }
 }
+
+List<Widget> _widgetOptions = <Widget>[
+  Text('Home Page'),
+  CartScreen(),
+  ProductScreen(),
+  UserView(),
+];
